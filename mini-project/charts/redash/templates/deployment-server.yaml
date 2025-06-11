@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redash-server
+  labels:
+    app: redash-server
+spec:
+  replicas: {{ .Values.redash.replicaCountServer }}
+  selector:
+    matchLabels:
+      app: redash-server
+  template:
+    metadata:
+      labels:
+        app: redash-server
+    spec:
+      containers:
+        - name: redash-server
+          image: "{{ .Values.redash.image.repository }}:{{ .Values.redash.image.tag }}"
+          imagePullPolicy: {{ .Values.redash.image.pullPolicy }}
+          command: ["server"]
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - secretRef:
+                name: {{ .Values.redash.secretName }}

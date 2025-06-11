@@ -1,0 +1,29 @@
+docker-compose run --rm redash-server create_db
+
+
+{
+  "collection": "posts",
+  "query": {
+    "created_at": {
+      "$gte": {
+        "$humanTime": "yesterday"
+      }
+    },
+    "comments": { "$gt": 5 },
+    "pluses": { "$gt": 5 }
+  }
+}
+
+
+{
+  "collection": "posts",
+  "query": {
+    "created_at": {
+      "$gte": {
+        "$humanTime": "yesterday"
+      }
+    },
+    "comments": { "$lt": 5 },
+    "pluses": { "$lt": 5 }
+  }
+}

@@ -1,0 +1,29 @@
+apiVersion: v2
+name: mini-project-chart
+description: Helm chart dla projektu LDP
+type: application
+version: 0.1.0
+appVersion: "1.0"
+
+dependencies:
+  - name: redis
+    version: 21.2.1
+    repository: https://charts.bitnami.com/bitnami
+  - name: mongo
+    version: 0.1.0
+    repository: file://charts/mongo
+  - name: postgresql
+    version: 16.7.10
+    repository: https://charts.bitnami.com/bitnami
+  - name: prometheus
+    version: 27.20.0
+    repository: https://prometheus-community.github.io/helm-charts
+  - name: grafana
+    version: 9.2.2
+    repository: https://grafana.github.io/helm-charts 
+  - name: redash
+    version: 0.1.0
+    repository: file://charts/redash
+  - name: celery
+    version: 0.1.0
+    repository: file://charts/celery

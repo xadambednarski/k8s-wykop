@@ -1,0 +1,118 @@
+services:
+  redis:
+    image: redis:7
+    ports:
+      - "6380:6379"
+
+  pushgateway:
+    image: prom/pushgateway
+    ports:
+      - "9092:9091"
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    ports:
+      - "9090:9090"
+    depends_on:
+      - pushgateway
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+  celery-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.celery
+    image: celery-cpu
+    working_dir: /app
+    volumes:
+      - ./app:/app
+      - ./models:/models
+    command: celery -A celery_app worker --loglevel=info --concurrency=4
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - pushgateway
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile.celery
+    image: celery-cpu
+    working_dir: /app
+    volumes:
+      - ./app:/app
+      - ./models:/models
+    command: celery -A celery_app beat --loglevel=info
+    env_file:
+      - .env
+    depends_on:
+      - redis
+
+  mongo:
+      image: mongo:latest
+      restart: always
+      ports:
+        - "27017:27017"
+      volumes:
+        - mongo-data:/data/db
+      environment:
+        MONGO_INITDB_DATABASE: wykopdb
+
+  postgres:
+    image: postgres:12
+    env_file:
+      - .env
+
+  redash-server:
+    image: redash/redash:25.1.0
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    command: server
+
+  redash-worker:
+    image: redash/redash:25.1.0
+    depends_on:
+      - redash-server
+    env_file:
+      - .env
+    command: worker
+
+  spark:
+    build:
+      context: .
+      dockerfile: Dockerfile.spark
+    image: spark-local
+    working_dir: /app
+    volumes:
+      - ./app:/app
+      - ./models:/models
+      - ./data:/data
+    environment:
+      - PYSPARK_PYTHON=python3
+      - HOME=/root
+    entrypoint: ["python3", "regression.py"]
+
+volumes:
+  grafana-data:
+  mongo-data:

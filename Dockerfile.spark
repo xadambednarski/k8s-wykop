@@ -1,0 +1,11 @@
+FROM bitnami/spark:latest
+
+
+WORKDIR /app
+USER root
+COPY requirements-spark.txt .
+
+RUN python3 -m pip install --no-cache-dir torch==2.7.1+cpu --extra-index-url https://download.pytorch.org/whl/cpu
+RUN python3 -m pip install --no-cache-dir -r requirements-spark.txt
+
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1

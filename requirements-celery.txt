@@ -1,0 +1,14 @@
+--find-links https://download.pytorch.org/whl/torch_stable.html
+
+python-dotenv
+torch==2.1.2+cpu
+pymongo
+transformers
+numpy<2.0
+celery
+redis
+requests
+prometheus-client
+langdetect
+protobuf
+sacremoses

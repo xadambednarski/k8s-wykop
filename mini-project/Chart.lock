@@ -1,0 +1,24 @@
+dependencies:
+- name: redis
+  repository: https://charts.bitnami.com/bitnami
+  version: 21.2.1
+- name: mongo
+  repository: file://charts/mongo
+  version: 0.1.0
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 16.7.10
+- name: prometheus
+  repository: https://prometheus-community.github.io/helm-charts
+  version: 27.20.0
+- name: grafana
+  repository: https://grafana.github.io/helm-charts
+  version: 9.2.2
+- name: redash
+  repository: file://charts/redash
+  version: 0.1.0
+- name: celery
+  repository: file://charts/celery
+  version: 0.1.0
+digest: sha256:5dbd05152ffca0bffbba4b3ce1f88c9bd1b58b9d8aec702e8fc8aba571fe2194
+generated: "2025-06-11T01:15:09.754854188+02:00"

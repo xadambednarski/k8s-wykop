@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redash-server
+  labels:
+    app: redash-server
+spec:
+  type: {{ .Values.redash.service.type }}
+  ports:
+    - port: {{ .Values.redash.service.port }}
+      targetPort: 5000
+      protocol: TCP
+      name: http
+  selector:
+    app: redash-server

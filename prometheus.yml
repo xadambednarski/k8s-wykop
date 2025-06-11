@@ -1,0 +1,9 @@
+scrape_configs:
+  - job_name: 'pushgateway'
+    static_configs:
+      - targets: ['mini-project-prometheus-pushgateway.default.svc.cluster.local:9091:9091']
+
+  - job_name: 'wykop_scraper'
+    honor_labels: true
+    static_configs:
+      - targets: ['mini-project-prometheus-pushgateway.default.svc.cluster.local:9091:9091']

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-worker
+  labels:
+    app: celery-worker
+spec:
+  replicas: {{ .Values.celeryWorker.replicas }}
+  selector:
+    matchLabels:
+      app: celery-worker
+  template:
+    metadata:
+      labels:
+        app: celery-worker
+    spec:
+      containers:
+        - name: celery-worker
+          image: "{{ .Values.celeryWorker.image.repository }}:{{ .Values.celeryWorker.image.tag }}"
+          workingDir: /app
+          volumeMounts:
+            - name: app-code
+              mountPath: /app
+            - name: model-volume
+              mountPath: /models
+          command: ["celery", "-A", "celery_app", "worker", "--loglevel=info", "--concurrency={{ .Values.celeryWorker.concurrency }}"]
+          envFrom:
+            - secretRef:
+                name: {{ .Values.celeryWorker.secretName }}
+      volumes:
+        - name: app-code
+          hostPath:
+            path: {{ .Values.celeryWorker.appPath }}
+            type: Directory
+        - name: model-volume
+          hostPath:
+            path: {{ .Values.celeryWorker.modelPath }}
+            type: Directory

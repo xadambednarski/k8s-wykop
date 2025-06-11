@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redash-worker
+  labels:
+    app: redash-worker
+spec:
+  replicas: {{ .Values.redash.replicaCountWorker }}
+  selector:
+    matchLabels:
+      app: redash-worker
+  template:
+    metadata:
+      labels:
+        app: redash-worker
+    spec:
+      containers:
+        - name: redash-worker
+          image: "{{ .Values.redash.image.repository }}:{{ .Values.redash.image.tag }}"
+          imagePullPolicy: {{ .Values.redash.image.pullPolicy }}
+          command: ["worker"]
+          envFrom:
+            - secretRef:
+                name: {{ .Values.redash.secretName }}

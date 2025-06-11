@@ -1,0 +1,99 @@
+redis:
+  service:
+    type: ClusterIP
+    port: 6379
+  master:
+    persistence:
+      enabled: false
+  secretName: mini-project-secrets
+  replicas: 1
+  auth:
+    enabled: false
+
+mongo:
+  mongo:
+    secretName: mini-project-secrets
+    username: wykop
+    password: wykop
+    database: wykopdb
+
+
+postgresql:
+  persistence:
+    enabled: false
+  service:
+    type: ClusterIP
+    port: 5432
+  secretName: mini-project-secrets
+
+prometheus:
+  pushgateway:
+    enabled: true
+    service:
+      type: NodePort
+      port: 9091
+      nodePort: 30091
+  service:
+    type: NodePort
+    nodePort: 30090
+  port: 9090
+  secretName: mini-project-secrets
+
+grafana:
+  adminUser: admin
+  adminPassword: admin
+  service:
+    type: NodePort
+    port: 3000
+    nodePort: 30300
+  persistence:
+    enabled: false
+  secretName: mini-project-secrets
+
+celery:
+  celeryWorker:
+    replicas: 1
+    image:
+      repository: xadamo/celery-cpu
+      tag: latest
+    env:
+      - name: WYKOP_API_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: mini-project-secrets
+            key: WYKOP_API_TOKEN
+      - name:
+    concurrency: 4
+    appPath: /mnt/project/app
+    modelPath: /mnt/project/models
+    service:
+      type: ClusterIP
+    secretName: mini-project-secrets
+
+  celeryBeat:
+    image:
+      repository: xadamo/celery-cpu
+      tag: latest
+    replicas: 1
+    env:
+      - name: CELERY_BROKER_URL
+        value: redis://mini-project-redis-master:6379/0"
+    appPath: /mnt/project/app
+    modelPath: /mnt/project/models
+    service:
+      type: ClusterIP
+    secretName: mini-project-secrets
+
+redash:
+  redash:
+    enabled: true
+    image:
+      repository: redash/redash
+      tag: 25.1.0
+      pullPolicy: IfNotPresent
+    replicaCountServer: 1
+    replicaCountWorker: 1
+    service:
+      type: ClusterIP
+      port: 5000
+    secretName: mini-project-secrets

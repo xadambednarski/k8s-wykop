@@ -1,0 +1,8 @@
+numpy
+protobuf
+pandas
+sacremoses
+python-dotenv
+pyspark
+pymongo
+transformers

@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+.env
+*.ipynb
+*.csv
+*.xlsx
+data/
+.git/
+.DS_Store
+tests/
+notebooks/
+models/

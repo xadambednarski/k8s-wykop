@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-beat
+  labels:
+    app: celery-beat
+spec:
+  selector:
+    matchLabels:
+      app: celery-beat
+  template:
+    metadata:
+      labels:
+        app: celery-beat
+    spec:
+      containers:
+        - name: celery-beat
+          image: "{{ .Values.celeryBeat.image.repository }}:{{ .Values.celeryBeat.image.tag }}"
+          workingDir: /app
+          volumeMounts:
+            - name: app-code
+              mountPath: /app
+            - name: model-volume
+              mountPath: /models
+          command: ["celery", "-A", "celery_app", "beat", "--loglevel=info"]
+          envFrom:
+            - secretRef:
+                name: {{ .Values.celeryBeat.secretName }}
+      volumes:
+        - name: app-code
+          hostPath:
+            path: {{ .Values.celeryBeat.appPath }}
+            type: Directory
+        - name: model-volume
+          hostPath:
+            path: {{ .Values.celeryBeat.modelPath }}
+            type: Directory
